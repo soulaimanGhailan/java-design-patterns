@@ -14,10 +14,25 @@ import java.util.function.Predicate;
 public class AccountRepoImpl implements AccountRepo {
     private Map<Long, BankAccount> accounts = new HashMap<>();
     private long accountNum  =  0 ;
+
+    private static final AccountRepoImpl accountRepo ;
+
+    // a static block will be executed when the class is loaded to the memory
+    static {
+        System.out.println("singleton init");
+        accountRepo = new AccountRepoImpl();
+    }
+
+    // to prevent ferther instantiation of the object
+    private AccountRepoImpl() {}
+
     @Override
     public BankAccount save(BankAccount account) {
-        account.setBankAccountId(++accountNum);
-        accounts.put(account.getBankAccountId() , account);
+        synchronized (this) {
+            ++accountNum;
+            account.setBankAccountId(accountNum);
+            accounts.put(account.getBankAccountId() , account);
+        }
         return account;
     }
 
@@ -58,5 +73,12 @@ public class AccountRepoImpl implements AccountRepo {
                     .build();
             save(account) ;
         }
+        System.out.println(Thread.currentThread().getName());
+        System.out.println("account num " + accountNum);
+        System.out.println("accounts size " +accounts.values().size());
+    }
+
+    public static AccountRepoImpl getInstance(){
+        return accountRepo;
     }
 }
