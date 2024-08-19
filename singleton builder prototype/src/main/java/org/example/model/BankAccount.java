@@ -3,20 +3,22 @@ package org.example.model;
 import org.example.model.enums.AccountStatus;
 import org.example.model.enums.AccountType;
 
-public class BankAccount {
+public class BankAccount implements Cloneable{
     private Long bankAccountId ;
     private double balance ;
     private String currency ;
     private AccountType accountType ;
     private AccountStatus status ;
+    private Customer customer ;
 
     public BankAccount(){  }
-    public BankAccount(Long bankAccountId, double balance, String currency, AccountType accountType, AccountStatus status) {
+    public BankAccount(Long bankAccountId, double balance, String currency, AccountType accountType, AccountStatus status, Customer customer) {
         this.bankAccountId = bankAccountId;
         this.balance = balance;
         this.currency = currency;
         this.accountType = accountType;
         this.status = status;
+        this.customer = customer;
     }
 
     public Long getBankAccountId() {
@@ -59,6 +61,14 @@ public class BankAccount {
         this.status = status;
     }
 
+    public Customer getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
+    }
+
     @Override
     public String toString() {
         return "BankAccount{" +
@@ -67,10 +77,9 @@ public class BankAccount {
                 ", currency='" + currency + '\'' +
                 ", accountType=" + accountType +
                 ", status=" + status +
+                ", customer=" + customer +
                 '}';
     }
-
-
 
     public static class AccountBuilder {
         private BankAccount account = new BankAccount() ;
@@ -100,4 +109,11 @@ public class BankAccount {
         }
     }
 
+    @Override
+    public BankAccount clone() throws CloneNotSupportedException {
+        BankAccount account = (BankAccount) super.clone();
+        // for the customer to be cloned also inside the account object
+        account.setCustomer(account.getCustomer().clone());
+        return account ;
+    }
 }
